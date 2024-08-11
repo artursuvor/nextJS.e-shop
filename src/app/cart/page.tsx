@@ -1,4 +1,3 @@
-// src/app/cart/page.tsx
 import React from 'react';
 import CartClient from '@/components/CartClient';
 
