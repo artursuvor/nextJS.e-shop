@@ -1,7 +1,22 @@
-import Image from "next/image";
-import { Product } from "@/data/data";
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/redux/slices/cartSlice';
+import { RootState } from '@/redux/store';
+import { Product } from '@/utils/data';
 
 const ProductCard: React.FC<Product> = ({ id, title, price, category, image, rating }) => {
+  const dispatch = useDispatch();
+  const cartItemQuantity = useSelector((state: RootState) =>
+    state.cart.items.find(item => item.id === id)?.quantity || 0
+  );
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ id, title, price, quantity: 1 }));
+  };
+
   return (
     <div
       key={id}
@@ -20,8 +35,11 @@ const ProductCard: React.FC<Product> = ({ id, title, price, category, image, rat
       <p className="text-gray-600 dark:text-gray-300">{`$${price}`}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400">{`Category: ${category}`}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400">{`Rating: ${rating.rate} (${rating.count} reviews)`}</p>
-      <button className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-300">
-        Add to Cart
+      <button
+        onClick={handleAddToCart}
+        className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-300"
+      >
+        {cartItemQuantity > 0 ? `In Cart (${cartItemQuantity})` : 'Add to Cart'}
       </button>
     </div>
   );

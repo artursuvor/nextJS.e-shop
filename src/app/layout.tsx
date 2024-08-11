@@ -1,14 +1,13 @@
+"use client";
+
 import React from 'react';
-import { Metadata } from 'next';
+import { Provider } from 'react-redux';
+import { store } from '@/redux/store';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ThemeProvider from '../components/ThemeProvider';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Fake e-shop',
-  description: 'My representation of e-shop using next.js',
-};
 
 export default function RootLayout({
   children,
@@ -18,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <Provider store={store}>
+          <ThemeProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </Provider>
       </body>
     </html>
   );

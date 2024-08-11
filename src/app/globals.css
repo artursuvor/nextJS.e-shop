@@ -2,20 +2,11 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-:root {
-  --background-color-light: #ffffff;
-  --text-color-light: #000000;
-  --background-color-dark: #000000;
-  --text-color-dark: #ffffff;
-}
-
 body {
   font-family: 'Inter', sans-serif;
 }
 
 .dark-mode {
-  --bg-color: #1a202c;
-  --text-color: #e2e8f0;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: #1a202c;
+  color: #e2e8f0;
 }

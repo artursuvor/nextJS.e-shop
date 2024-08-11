@@ -1,27 +1,10 @@
 import React from "react";
-import ProductCard from "../components/Product";
-import { getProducts, Product } from "@/data/data";
+import ProductCard from "../components/ProductCard";
+import { getProducts, Product } from "@/utils/data";
 
 export default async function Home() {
   const products: Product[] = await getProducts();
 
-  const shuffleArray = (array: Product[]) => {
-    let currentIndex = array.length;
-    let temporaryValue: Product;
-    let randomIndex: number;
-
-    while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-  };
-
-  const randomProducts = shuffleArray([...products]).slice(0, 4);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24 bg-gray-100 dark:bg-gray-900">
@@ -30,7 +13,7 @@ export default async function Home() {
           Featured Products
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {randomProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               {...product}
