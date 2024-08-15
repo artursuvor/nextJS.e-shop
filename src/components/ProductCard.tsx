@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,15 +14,19 @@ const ProductCard: React.FC<Product> = ({ id, title, price, category, image, rat
     state.cart.items.find(item => item.id === id)?.quantity || 0
   );
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ id, title, price, quantity: 1 }));
-  };
+  const handleAddToCart = useMemo(() => {
+    return () => {
+      dispatch(addToCart({ id, title, price, quantity: 1 }));
+    };
+  }, [dispatch, id, title, price]);
 
-  const handleRemoveFromCart = () => {
-    if (cartItemQuantity > 0) {
-      dispatch(removeFromCart(id));
-    }
-  };
+  const handleRemoveFromCart = useMemo(() => {
+    return () => {
+      if (cartItemQuantity > 0) {
+        dispatch(removeFromCart(id));
+      }
+    };
+  }, [dispatch, cartItemQuantity, id]);
 
   return (
     <div
@@ -30,7 +34,7 @@ const ProductCard: React.FC<Product> = ({ id, title, price, category, image, rat
       className="border p-5 rounded-lg shadow-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
     >
       <div className="relative w-full h-48 mb-3">
-      <Image
+        <Image
           src={image}
           alt={title}
           fill
