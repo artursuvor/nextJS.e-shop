@@ -22,3 +22,4 @@ This project is a web application for e-commerce developed using **React**, **Ne
 - **React Developer Tools** and **Chrome DevTools**: Tools for profiling and performance analysis.
 
 
+![2024-08-15 14-12-30](https://github.com/user-attachments/assets/d4e9f66c-adc7-4f20-926c-b25da2449359)
