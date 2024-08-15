@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from '@/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '@/redux/store';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ThemeProvider from '../components/ThemeProvider';
 import './globals.css';
-
 
 export default function RootLayout({
   children,
@@ -18,11 +18,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Provider store={store}>
-          <ThemeProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-          </ThemeProvider>
+          <PersistGate loading={null} persistor={persistor}>
+            <ThemeProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+            </ThemeProvider>
+          </PersistGate>
         </Provider>
       </body>
     </html>
