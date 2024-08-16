@@ -1,5 +1,5 @@
 # React E-Shop Project
-
+[Project Demo](https://fake-eshop-nextjs.vercel.app/)
 ## Description
 
 This project is a web application for e-commerce developed using **React**, **Next.js**, **Redux**, and **Firebase**. The application allows users to view products, manage a shopping cart, authenticate, and switch between light and dark themes.
