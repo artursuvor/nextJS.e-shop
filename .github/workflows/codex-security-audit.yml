@@ -28,7 +28,11 @@ jobs:
           const version=Array.isArray(versions)?versions.at(-1):versions;
           if(!/^15\.\d+\.\d+$/.test(version))throw new Error('Expected a stable patched Next.js 15 release');
           console.log('NEXT_SECURITY_MIGRATION',version);
-          const patches = {dependencies:{next:version},devDependencies:{'eslint-config-next':version}};
+          const postcssVersions=JSON.parse(npm(['view','postcss@8','version','--json'],'.').stdout);
+          const postcssVersion=Array.isArray(postcssVersions)?postcssVersions.at(-1):postcssVersions;
+          console.log('POSTCSS_SECURITY_UPDATE',postcssVersion);
+          const patches = {dependencies:{next:version},devDependencies:{'eslint-config-next':version,postcss:postcssVersion}};
+          root.overrides={...root.overrides,postcss:'$postcss'};
           for (const [section, entries] of Object.entries(patches)) for (const [name, version] of Object.entries(entries)) root[section][name] = version;
           const files = cp.execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(p=>p && !/(^|\/)(node_modules|vendor)\//.test(p) && /\.(?:[cm]?[jt]sx?|php|json)$/.test(p) && !/(^|\/)(package(?:-lock)?\.json|composer(?:\.json|\.lock))$/.test(p));
           const sources = files.filter(p=>fs.existsSync(p)).map(p=>fs.readFileSync(p,'utf8'));
