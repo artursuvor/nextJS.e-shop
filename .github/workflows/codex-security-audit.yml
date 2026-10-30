@@ -32,7 +32,10 @@ jobs:
           const postcssVersion=Array.isArray(postcssVersions)?postcssVersions.at(-1):postcssVersions;
           console.log('POSTCSS_SECURITY_UPDATE',postcssVersion);
           const patches = {dependencies:{next:version},devDependencies:{'eslint-config-next':version,postcss:postcssVersion}};
-          root.overrides={...root.overrides,postcss:'$postcss'};
+          const undiciVersions=JSON.parse(npm(['view','undici@6','version','--json'],'.').stdout);
+          const grpcVersions=JSON.parse(npm(['view','@grpc/grpc-js@1','version','--json'],'.').stdout);
+          root.overrides={...root.overrides,postcss:'$postcss',undici:undiciVersions.at(-1),'@grpc/grpc-js':grpcVersions.at(-1)};
+          console.log('FIREBASE_TRANSITIVE_SECURITY_UPDATE',JSON.stringify(root.overrides));
           for (const [section, entries] of Object.entries(patches)) for (const [name, version] of Object.entries(entries)) root[section][name] = version;
           const files = cp.execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(p=>p && !/(^|\/)(node_modules|vendor)\//.test(p) && /\.(?:[cm]?[jt]sx?|php|json)$/.test(p) && !/(^|\/)(package(?:-lock)?\.json|composer(?:\.json|\.lock))$/.test(p));
           const sources = files.filter(p=>fs.existsSync(p)).map(p=>fs.readFileSync(p,'utf8'));
@@ -117,6 +120,13 @@ jobs:
             git push origin HEAD:codex/security-audit-2026-10-30
           fi
       - name: Validate updated dependencies
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: audit-build-only-placeholder
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: demo-security-audit.firebaseapp.com
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: demo-security-audit
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: demo-security-audit.appspot.com
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "1234567890"
+          NEXT_PUBLIC_FIREBASE_APP_ID: "1:1234567890:web:audit"
         run: |
           node - <<'NODE'
           const fs=require('fs'), cp=require('child_process');
