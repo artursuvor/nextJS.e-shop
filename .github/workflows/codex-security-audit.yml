@@ -24,7 +24,11 @@ jobs:
           const allowed = fs.existsSync('package.json') ? ['package.json'] : [], reports = [];
           
           const root = fs.existsSync('package.json') ? JSON.parse(fs.readFileSync('package.json','utf8')) : {};
-          const patches = {"dependencies":{"next":"14.2.35"}};
+          const versions=JSON.parse(npm(['view','next@15','version','--json'],'.').stdout);
+          const version=Array.isArray(versions)?versions.at(-1):versions;
+          if(!/^15\.\d+\.\d+$/.test(version))throw new Error('Expected a stable patched Next.js 15 release');
+          console.log('NEXT_SECURITY_MIGRATION',version);
+          const patches = {dependencies:{next:version},devDependencies:{'eslint-config-next':version}};
           for (const [section, entries] of Object.entries(patches)) for (const [name, version] of Object.entries(entries)) root[section][name] = version;
           const files = cp.execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(p=>p && !/(^|\/)(node_modules|vendor)\//.test(p) && /\.(?:[cm]?[jt]sx?|php|json)$/.test(p) && !/(^|\/)(package(?:-lock)?\.json|composer(?:\.json|\.lock))$/.test(p));
           const sources = files.filter(p=>fs.existsSync(p)).map(p=>fs.readFileSync(p,'utf8'));
@@ -98,6 +102,16 @@ jobs:
             }
           }
           NODE
+      - name: Migrate asynchronous request APIs with the official Next.js codemod
+        run: |
+          npx --yes @next/codemod@16.4.3 next-async-request-api . --force
+          git add -u
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -c core.hooksPath=/dev/null commit -m "fix: migrate request APIs for patched Next.js"
+            git push origin HEAD:codex/security-audit-2026-10-30
+          fi
       - name: Validate updated dependencies
         run: |
           node - <<'NODE'
