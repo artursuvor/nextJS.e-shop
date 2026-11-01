@@ -1,0 +1,31 @@
+name: Application and dependency checks
+on:
+  pull_request:
+  push:
+    branches: [main, master, codex/security-audit-2026-10-30]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HUSKY: '0'
+      # Compilation uses placeholders; cloud authentication is checked separately.
+      NEXT_PUBLIC_FIREBASE_API_KEY: build-only-not-a-production-key
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: build-only.invalid
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: build-only
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: build-only.invalid
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: '1234567890'
+      NEXT_PUBLIC_FIREBASE_APP_ID: '1:1234567890:web:build-only'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.18.0'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: npm audit --audit-level=low
