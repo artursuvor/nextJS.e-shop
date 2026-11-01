@@ -2,6 +2,9 @@ import React from "react";
 import ProductCard from "../components/ProductCard";
 import { getProducts, Product } from "@/utils/data";
 
+// Product availability is checked at request time, independent of the build runner.
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const products: Product[] = await getProducts();
 
